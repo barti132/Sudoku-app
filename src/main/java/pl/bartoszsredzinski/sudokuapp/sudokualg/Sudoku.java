@@ -1,4 +1,6 @@
-package pl.bartoszsredzinski.sudokuapp;
+package pl.bartoszsredzinski.sudokuapp.sudokualg;
+
+import java.util.stream.IntStream;
 
 /**
  * Class description
@@ -10,21 +12,23 @@ public class Sudoku{
 
     private static final int BOARD_SIZE = 9;
     private int[][] board;
+    private BacktracingAlgorithm solver;
 
     public Sudoku(){
-
+        solver = new BacktracingAlgorithm();
     }
 
     public Sudoku(int[][] board){
-        if(checkBoard(board)){
+        if(checkInputBoard(board)){
             this.board = board;
+            solver = new BacktracingAlgorithm();
         }
         else{
             throw new IllegalArgumentException();
         }
     }
 
-    private Boolean checkBoard(int[][] board){
+    private boolean checkInputBoard(int[][] board){
         for(int[] row : board){
             if(row.length != BOARD_SIZE){
                 return false;
@@ -59,7 +63,14 @@ public class Sudoku{
     }
 
     public void solve(){
-        System.out.println("solve sudoku");
+        int[][] solvedBoard = solver.solve(board);
+        if(solvedBoard != null){
+            this.board = solvedBoard;
+            System.out.println("This sudoku have solution.");
+        }
+        else{
+            System.out.println("No solution for this sudoku.");
+        }
     }
 
 }

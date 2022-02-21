@@ -6,4 +6,6 @@ module com.example.sudokuapp {
 
     opens pl.bartoszsredzinski.sudokuapp to javafx.fxml;
     exports pl.bartoszsredzinski.sudokuapp;
+    exports pl.bartoszsredzinski.sudokuapp.sudokualg;
+    opens pl.bartoszsredzinski.sudokuapp.sudokualg to javafx.fxml;
 }
