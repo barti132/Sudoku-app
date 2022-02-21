@@ -1,7 +1,5 @@
 package pl.bartoszsredzinski.sudokuapp.sudokualg;
 
-import java.util.stream.IntStream;
-
 /**
  * Class description
  *
@@ -12,16 +10,16 @@ public class Sudoku{
 
     private static final int BOARD_SIZE = 9;
     private int[][] board;
-    private BacktracingAlgorithm solver;
+    private BacktrackingAlgorithm solver;
 
     public Sudoku(){
-        solver = new BacktracingAlgorithm();
+        solver = new BacktrackingAlgorithm();
     }
 
     public Sudoku(int[][] board){
         if(checkInputBoard(board)){
             this.board = board;
-            solver = new BacktracingAlgorithm();
+            solver = new BacktrackingAlgorithm();
         }
         else{
             throw new IllegalArgumentException();

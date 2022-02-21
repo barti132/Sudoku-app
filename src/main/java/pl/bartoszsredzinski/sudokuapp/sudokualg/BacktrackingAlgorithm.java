@@ -6,7 +6,7 @@ package pl.bartoszsredzinski.sudokuapp.sudokualg;
  * @author Bartosz Średziński
  * created on 20.02.2022
  */
-public class BacktracingAlgorithm{
+public class BacktrackingAlgorithm{
 
     public int[][] solve(int[][] board){
 
