@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 class SudokuTest{
 
-    private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
     @BeforeEach

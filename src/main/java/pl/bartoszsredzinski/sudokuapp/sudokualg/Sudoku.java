@@ -1,7 +1,7 @@
 package pl.bartoszsredzinski.sudokuapp.sudokualg;
 
 /**
- * Class description
+ * Sudoku class
  *
  * @author Bartosz Średziński
  * created on 20.02.2022
