@@ -8,8 +8,7 @@ import pl.bartoszsredzinski.sudokuapp.sudokualg.Sudoku;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Class description
@@ -39,9 +38,10 @@ class SudokuTest{
                 {0, 0, 0, 4, 1, 9, 0, 0, 5},
                 {0, 0, 0, 0, 8, 0, 0, 7, 9}
         };
-        Sudoku s = new Sudoku(sudoku);
-        s.solve();
-        assertEquals("This sudoku have solution.", outputStreamCaptor.toString().trim());
+        Sudoku s = new Sudoku();
+        s.setBoard(sudoku);
+
+        assertNotNull(s.solve());
     }
 
     @Test
@@ -57,9 +57,10 @@ class SudokuTest{
                 {0, 6, 3, 4, 0, 0, 0, 2, 5},
                 {0, 7, 4, 0, 8, 0, 0, 1, 6}
         };
-        Sudoku s = new Sudoku(sudoku);
-        s.solve();
-        assertEquals("No solution for this sudoku.", outputStreamCaptor.toString().trim());
+        Sudoku s = new Sudoku();
+        s.setBoard(sudoku);
+
+        assertNull(s.solve());
     }
 
     @Test
@@ -75,7 +76,8 @@ class SudokuTest{
                 {0, 0, 0, 4, 1, 9, 0, 0, 5},
                 {0, 0, 0, 0, 8, 0, 0, 7, 9}
         };
-        Sudoku s = new Sudoku(sudoku);
+        Sudoku s = new Sudoku();
+        s.setBoard(sudoku);
         s.print();
         assertEquals(
                 "5 3 0 | 0 7 0 | 0 0 0 \r\n"
