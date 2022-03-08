@@ -6,12 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import pl.bartoszsredzinski.sudokuapp.sudokualg.Sudoku;
 import pl.bartoszsredzinski.sudokuapp.uicomponents.MenuButton;
 import pl.bartoszsredzinski.sudokuapp.uicomponents.SudokuTextField;
@@ -26,10 +26,9 @@ public class SudokuGame{
     private final int GRID_WIDTH = 9;
     private final int GRID_HEIGHT = 9;
 
-    private HBox pane;
     private GridPane sudokuGrid;
     private TextArea messageBox;
-    private ComboBox levelBox;
+    private ComboBox<String> levelBox;
     private final Sudoku sudoku;
 
     public SudokuGame(){
@@ -37,7 +36,7 @@ public class SudokuGame{
     }
 
     public Parent createContent(){
-        pane = new HBox();
+        HBox pane = new HBox();
         sudokuGrid = createSudokuGrid();
         pane.getChildren().add(sudokuGrid);
         pane.getChildren().add(generateMenuPanel());
@@ -46,9 +45,7 @@ public class SudokuGame{
     }
 
     private VBox generateMenuPanel(){
-        levelBox = new ComboBox(FXCollections.observableArrayList(
-                "Easy", "Medium", "Hard")
-        );
+        levelBox = new ComboBox<>(FXCollections.observableArrayList("Easy", "Medium", "Hard"));
         levelBox.setPrefWidth(180);
         levelBox.setValue("Medium");
 
@@ -65,6 +62,8 @@ public class SudokuGame{
         messageBox.setPrefWidth(180);
         messageBox.setPrefHeight(20);
         messageBox.setEditable(false);
+        messageBox.setMouseTransparent(true);
+        messageBox.setFocusTraversable(false);
 
         VBox vBox = new VBox();
         vBox.setSpacing(50);
@@ -99,41 +98,76 @@ public class SudokuGame{
     }
 
     private void solveSudokuAction(){
-        System.out.println("solve sudoku");
+
+        for(Node node : sudokuGrid.getChildren()){
+            SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
+            int val = Integer.parseInt(field.getText());
+            int col = GridPane.getColumnIndex(node);
+            int row = GridPane.getRowIndex(node);
+
+            sudoku.setField(val, row, col);
+        }
+
+        int[][] board = sudoku.solve();
+
+        if(board == null){
+            writeMessage("No solution for your input!!!", "red");
+        }
+        else {
+            sudoku.setBoard(board);
+            loadSudokuToBoard(false);
+            writeMessage("Solved.", "black");
+        }
+    }
+
+    private void writeMessage(String msg, String red){
+        messageBox.setStyle(null);
+        messageBox.setStyle("-fx-text-fill: " + red);
+        messageBox.setText(msg);
     }
 
     private void generateSudokuAction(){
         sudoku.generate(getLevelAsInteger());
+        loadSudokuToBoard(true);
+        messageBox.setText("Generated new Sudoku!");
+    }
+
+    private void loadSudokuToBoard(boolean setNotEditable){
         for(Node node : sudokuGrid.getChildren()){
-            StackPane stack = (StackPane) node;
-            SudokuTextField field = (SudokuTextField) stack.getChildren().get(0);
+            SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
             String val = String.valueOf(sudoku.getBoard()[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)]);
 
-            field.setStyle(null);
             field.setText(val);
-            field.setEditable(true);
-            field.setMouseTransparent(false);
-            field.setFocusTraversable(true);
-            field.setStyle("-fx-display-caret: false;");
+            if(setNotEditable){
+                resetField(field);
+            }
 
-            if(!val.equals("0")){
-                field.setEditable(false);
-                field.setMouseTransparent(true);
-                field.setFocusTraversable(false);
-                field.setStyle("-fx-background-color: #d1d1d1;");
+            if(setNotEditable && !val.equals("0")){
+                setFieldAsNotEditable(field);
             }
         }
+    }
 
+    private void setFieldAsNotEditable(SudokuTextField field){
+        field.setEditable(false);
+        field.setMouseTransparent(true);
+        field.setFocusTraversable(false);
+        field.setStyle("-fx-background-color: #d1d1d1;");
+    }
+
+    private void resetField(SudokuTextField field){
+        field.setStyle(null);
+        field.setEditable(true);
+        field.setMouseTransparent(false);
+        field.setFocusTraversable(true);
+        field.setStyle("-fx-display-caret: false;");
     }
 
     private int getLevelAsInteger(){
-        switch(levelBox.getSelectionModel().getSelectedItem().toString()){
-            case "Easy":
-                return 4;
-            case "Hard":
-                return 8;
-            default:
-                return 6;
-        }
+        return switch(levelBox.getSelectionModel().getSelectedItem()){
+            case "Easy" -> 4;
+            case "Hard" -> 8;
+            default -> 6;
+        };
     }
 }

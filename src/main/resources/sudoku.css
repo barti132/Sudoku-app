@@ -1,5 +1,5 @@
 .root {
-    -fx-padding: 5px ;
+    -fx-padding: 5px;
 }
 
 .cell {
@@ -25,8 +25,8 @@
     -fx-pref-height: 3em;
 }
 
-.combo-box-base .list-cell{
-    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border,  #2c6ca4;
+.combo-box-base .list-cell {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, #2c6ca4;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-background-radius: 3px, 3px, 2px, 1px;
     -fx-text-fill: white;

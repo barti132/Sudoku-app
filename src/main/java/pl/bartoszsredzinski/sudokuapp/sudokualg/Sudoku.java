@@ -21,14 +21,6 @@ public class Sudoku{
         random = new Random();
     }
 
-    public void setBoard(int[][] board){
-        this.board = board;
-    }
-
-    public int[][] getBoard(){
-        return board;
-    }
-
     public void print(){
         for(int i = 0; i < 9; i++){
             if(i % 3 == 0 && i != 0){
@@ -48,7 +40,7 @@ public class Sudoku{
     public void generate(int level){
         setEmpty();
 
-        int [][] tmp;
+        int[][] tmp;
         do{
             setSeedForBoard();
             tmp = solve();
@@ -61,7 +53,7 @@ public class Sudoku{
     }
 
     private void deleteFields(int limit){
-        for(int i = 0; i < limit;){
+        for(int i = 0; i < limit; ){
             int x = random.nextInt(BOARD_SIZE);
             int y = random.nextInt(BOARD_SIZE);
             int val = board[x][y];
@@ -70,7 +62,7 @@ public class Sudoku{
             if(solve() == null){
                 this.board[x][y] = val;
             }
-            else {
+            else{
                 i++;
             }
         }
@@ -89,8 +81,9 @@ public class Sudoku{
 
     public int[][] solve(){
         int[][] copyBoard = new int[BOARD_SIZE][BOARD_SIZE];
-        for(int i = 0; i < BOARD_SIZE; i++)
+        for(int i = 0; i < BOARD_SIZE; i++){
             copyBoard[i] = board[i].clone();
+        }
         return solver.solve(copyBoard);
     }
 
@@ -102,4 +95,15 @@ public class Sudoku{
         }
     }
 
+    public void setField(int val, int col, int row){
+        board[col][row] = val;
+    }
+
+    public void setBoard(int[][] board){
+        this.board = board;
+    }
+
+    public int[][] getBoard(){
+        return board;
+    }
 }
