@@ -19,7 +19,7 @@ public class SudokuTextField extends TextField{
         setAlignment(Pos.CENTER);
         setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
         setTextFormatter(new TextFormatter<Integer>(c -> {
-            if(c.getControlNewText().matches("[0-9]")){
+            if(c.getControlNewText().matches("[0-9]?")){
                 return c;
             }
             else{

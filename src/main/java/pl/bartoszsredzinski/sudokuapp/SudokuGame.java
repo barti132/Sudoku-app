@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -22,9 +23,16 @@ import pl.bartoszsredzinski.sudokuapp.uicomponents.SudokuTextField;
  * @author Bartosz Średziński
  * created on 07.03.2022
  */
+//TODO
+// wywalić vallid przycisk,
+// dodać wskazówkę(sudoku zapisać rozwiązane sudoku),
+// timer,
+// labele dla pól,
+// automatyczne sprawdzanie(opcjonalnie)
+// refactor
 public class SudokuGame{
-    private final int GRID_WIDTH = 9;
-    private final int GRID_HEIGHT = 9;
+    private static final int GRID_WIDTH = 9;
+    private static final int GRID_HEIGHT = 9;
 
     private GridPane sudokuGrid;
     private TextArea messageBox;
@@ -41,6 +49,8 @@ public class SudokuGame{
         pane.getChildren().add(sudokuGrid);
         pane.getChildren().add(generateMenuPanel());
 
+        generateSudokuAction();
+
         return pane;
     }
 
@@ -49,14 +59,14 @@ public class SudokuGame{
         levelBox.setPrefWidth(180);
         levelBox.setValue("Medium");
 
-        MenuButton generateSudoku = new MenuButton("Generate new sudoku");
+        MenuButton generateSudoku = new MenuButton("Start new sudoku");
         generateSudoku.setOnMouseClicked(e -> generateSudokuAction());
 
         MenuButton solveSudoku = new MenuButton("Solve sudoku");
         solveSudoku.setOnMouseClicked(e -> solveSudokuAction());
 
-        MenuButton validSudoku = new MenuButton("Valid sudoku");
-        validSudoku.setOnMouseClicked(e -> solveSudokuAction());
+        ToggleButton validSudoku = new ToggleButton("Valid sudoku");
+        validSudoku.setOnMouseClicked(e -> validSudokuAction());
 
         messageBox = new TextArea();
         messageBox.setPrefWidth(180);
@@ -97,26 +107,61 @@ public class SudokuGame{
         return sudokuPane;
     }
 
-    private void solveSudokuAction(){
-
+    private void validSudokuAction(){
+        boolean isValid = true;
+        loadBoardToSudoku();
         for(Node node : sudokuGrid.getChildren()){
             SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
-            int val = Integer.parseInt(field.getText());
-            int col = GridPane.getColumnIndex(node);
-            int row = GridPane.getRowIndex(node);
+            int val = 0;
+            if(field.getText().equals("")){
+                val = Integer.parseInt(field.getText());
+            }
+            if(val != 0){
+                int col = GridPane.getColumnIndex(node);
+                int row = GridPane.getRowIndex(node);
+                sudoku.setField(0, row, col);
 
-            sudoku.setField(val, row, col);
+                if(!sudoku.isValid(val, row, col)){
+                    writeMessage("Sudoku not valid! You made a mistake.", "red");
+                    System.out.println(col + " " + row + " " + val);
+                    isValid = false;
+                    break;
+                }
+                sudoku.setField(val, row, col);
+            }
         }
 
+        if(isValid){
+            writeMessage("Sudoku is valid!", "green");
+        }
+    }
+
+    private void solveSudokuAction(){
+        loadBoardToSudoku();
         int[][] board = sudoku.solve();
 
         if(board == null){
             writeMessage("No solution for your input!!!", "red");
         }
-        else {
+        else{
             sudoku.setBoard(board);
             loadSudokuToBoard(false);
             writeMessage("Solved.", "black");
+        }
+    }
+
+    private void loadBoardToSudoku(){
+        for(Node node : sudokuGrid.getChildren()){
+            SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
+            int val = 0;
+            if(!field.getText().equals("")){
+                val = Integer.parseInt(field.getText());
+            }
+            int col = GridPane.getColumnIndex(node);
+            int row = GridPane.getRowIndex(node);
+
+
+            sudoku.setField(val, row, col);
         }
     }
 
@@ -137,7 +182,13 @@ public class SudokuGame{
             SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
             String val = String.valueOf(sudoku.getBoard()[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)]);
 
-            field.setText(val);
+            if(val.equals("0")){
+                field.setText("");
+            }
+            else{
+                field.setText(val);
+            }
+
             if(setNotEditable){
                 resetField(field);
             }
@@ -152,7 +203,7 @@ public class SudokuGame{
         field.setEditable(false);
         field.setMouseTransparent(true);
         field.setFocusTraversable(false);
-        field.setStyle("-fx-background-color: #d1d1d1;");
+        field.setStyle("-fx-border-color: #9c9c9c; -fx-border-width: 2; -fx-border-radius: 4");
     }
 
     private void resetField(SudokuTextField field){

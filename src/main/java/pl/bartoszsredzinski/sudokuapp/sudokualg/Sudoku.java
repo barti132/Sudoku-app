@@ -12,7 +12,8 @@ public class Sudoku{
 
     private static final int BOARD_SIZE = 9;
     private int[][] board;
-    private BacktrackingAlgorithm solver;
+    private int[][] solvedBoard;
+    private final BacktrackingAlgorithm solver;
     private final Random random;
 
     public Sudoku(){
@@ -21,62 +22,25 @@ public class Sudoku{
         random = new Random();
     }
 
-    public void print(){
-        for(int i = 0; i < 9; i++){
-            if(i % 3 == 0 && i != 0){
-                System.out.println("---------------------");
-            }
-
-            for(int j = 0; j < 9; j++){
-                if(j % 3 == 0 && j != 0){
-                    System.out.print("| ");
-                }
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println("");
-        }
+    public boolean isValid(int val, int row, int col){
+        return SudokuValidation.isValid(board, row, col, val);
     }
 
     public void generate(int level){
+        //set 0 in each field
         setEmpty();
 
         int[][] tmp;
         do{
-            setSeedForBoard();
-            tmp = solve();
+            setSeedForBoard();//set random values in some places
+            tmp = solve();//check if random values gives a proper sudoku
         }while(tmp == null);
 
+        //set sudoku boards
+        solvedBoard = tmp;
         board = tmp;
 
-        deleteFields(level * 10);
-        System.out.println("generate sudoku level: " + level);
-    }
-
-    private void deleteFields(int limit){
-        for(int i = 0; i < limit; ){
-            int x = random.nextInt(BOARD_SIZE);
-            int y = random.nextInt(BOARD_SIZE);
-            int val = board[x][y];
-            board[x][y] = 0;
-
-            if(solve() == null){
-                this.board[x][y] = val;
-            }
-            else{
-                i++;
-            }
-        }
-    }
-
-    private void setSeedForBoard(){
-        for(int i = 0; i < 10; i++){
-            int x = random.nextInt(BOARD_SIZE);
-            int y = random.nextInt(BOARD_SIZE);
-            int val = random.nextInt(BOARD_SIZE) + 1;
-            if(SudokuValidation.isValid(board, x, y, val)){
-                board[x][y] = val;
-            }
-        }
+        deleteFields(level * 10);//deletes random fields from board
     }
 
     public int[][] solve(){
@@ -105,5 +69,32 @@ public class Sudoku{
 
     public int[][] getBoard(){
         return board;
+    }
+
+    private void deleteFields(int limit){
+        for(int i = 0; i < limit; ){
+            int x = random.nextInt(BOARD_SIZE);
+            int y = random.nextInt(BOARD_SIZE);
+            int val = board[x][y];
+            board[x][y] = 0;
+
+            if(solve() == null){
+                this.board[x][y] = val;
+            }
+            else{
+                i++;
+            }
+        }
+    }
+
+    private void setSeedForBoard(){
+        for(int i = 0; i < 10; i++){
+            int x = random.nextInt(BOARD_SIZE);
+            int y = random.nextInt(BOARD_SIZE);
+            int val = random.nextInt(BOARD_SIZE) + 1;
+            if(SudokuValidation.isValid(board, x, y, val)){
+                board[x][y] = val;
+            }
+        }
     }
 }
