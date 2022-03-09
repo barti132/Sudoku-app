@@ -1,5 +1,6 @@
 package pl.bartoszsredzinski.sudokuapp.sudokualg;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -93,5 +94,14 @@ public class Sudoku{
 
     public boolean isCorrect(int parseInt, int x, int y){
         return solvedBoard[x][y] == parseInt;
+    }
+
+    public boolean isWin(){
+        for(int i = 0; i < BOARD_SIZE; i++){
+            if(!Arrays.equals(board[i], solvedBoard[i])){
+                return false;
+            }
+        }
+        return true;
     }
 }
