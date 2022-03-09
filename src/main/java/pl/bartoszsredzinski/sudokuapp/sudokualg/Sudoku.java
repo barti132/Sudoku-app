@@ -27,9 +27,7 @@ public class Sudoku{
     }
 
     public void generate(int level){
-        //set 0 in each field
-        setEmpty();
-
+        board = new int[BOARD_SIZE][BOARD_SIZE];
         int[][] tmp;
         do{
             setSeedForBoard();//set random values in some places
@@ -37,7 +35,10 @@ public class Sudoku{
         }while(tmp == null);
 
         //set sudoku boards
-        solvedBoard = tmp;
+        solvedBoard = new int[BOARD_SIZE][BOARD_SIZE];
+        for(int i = 0; i < BOARD_SIZE; i++){
+            solvedBoard[i] = tmp[i].clone();
+        }
         board = tmp;
 
         deleteFields(level * 10);//deletes random fields from board
@@ -49,14 +50,6 @@ public class Sudoku{
             copyBoard[i] = board[i].clone();
         }
         return solver.solve(copyBoard);
-    }
-
-    public void setEmpty(){
-        for(int i = 0; i < BOARD_SIZE; i++){
-            for(int j = 0; j < BOARD_SIZE; j++){
-                board[i][j] = 0;
-            }
-        }
     }
 
     public void setField(int val, int col, int row){
@@ -96,5 +89,13 @@ public class Sudoku{
                 board[x][y] = val;
             }
         }
+    }
+
+    public int getAdvice(int x, int y){
+        return solvedBoard[x][y];
+    }
+
+    public boolean isCorrect(int parseInt, int x, int y){
+        return solvedBoard[x][y] == parseInt;
     }
 }

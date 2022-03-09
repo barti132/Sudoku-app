@@ -14,10 +14,13 @@ import javafx.scene.text.FontWeight;
  * created on 07.03.2022
  */
 public class SudokuTextField extends TextField{
-    public SudokuTextField(){
-        setStyle("-fx-display-caret: false;");
-        setAlignment(Pos.CENTER);
-        setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
+    private final int x;
+    private final int y;
+    public SudokuTextField(int x, int y){
+        this.x = x;
+        this.y = y;
+
+        setDefaultStyle();
         setTextFormatter(new TextFormatter<Integer>(c -> {
             if(c.getControlNewText().matches("[0-9]?")){
                 return c;
@@ -26,5 +29,20 @@ public class SudokuTextField extends TextField{
                 return null;
             }
         }));
+    }
+
+    public void setDefaultStyle(){
+        setStyle(null);
+        setStyle("-fx-display-caret: false;");
+        setAlignment(Pos.CENTER);
+        setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
+    }
+
+    public int getX(){
+        return x;
+    }
+
+    public int getY(){
+        return y;
     }
 }
