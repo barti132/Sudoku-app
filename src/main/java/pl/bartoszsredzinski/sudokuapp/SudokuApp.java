@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
-import pl.bartoszsredzinski.sudokuapp.sudokualg.Sudoku;
 
 public class SudokuApp extends Application{
     private static SudokuGame game;

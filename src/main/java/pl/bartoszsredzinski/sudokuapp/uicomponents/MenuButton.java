@@ -5,7 +5,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 /**
- * Class description
+ * Sudoku menu button
  *
  * @author Bartosz Średziński
  * created on 07.03.2022

@@ -1,7 +1,7 @@
 package pl.bartoszsredzinski.sudokuapp;
 
 /**
- * Class description
+ * Coordinates
  *
  * @author Bartosz Średziński
  * created on 09.03.2022
@@ -11,6 +11,11 @@ public class Coordinates{
     private int y;
 
     public Coordinates(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setCoordinates(int x, int y){
         this.x = x;
         this.y = y;
     }

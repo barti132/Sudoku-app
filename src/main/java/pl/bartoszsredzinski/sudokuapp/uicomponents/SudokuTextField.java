@@ -8,7 +8,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 /**
- * Class description
+ * Sudoku text field
  *
  * @author Bartosz Średziński
  * created on 07.03.2022
@@ -16,6 +16,7 @@ import javafx.scene.text.FontWeight;
 public class SudokuTextField extends TextField{
     private final int x;
     private final int y;
+
     public SudokuTextField(int x, int y){
         this.x = x;
         this.y = y;

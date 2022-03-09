@@ -22,10 +22,6 @@ public class Sudoku{
         random = new Random();
     }
 
-    public boolean isValid(int val, int row, int col){
-        return SudokuValidation.isValid(board, row, col, val);
-    }
-
     public void generate(int level){
         board = new int[BOARD_SIZE][BOARD_SIZE];
         int[][] tmp;
@@ -85,7 +81,7 @@ public class Sudoku{
             int x = random.nextInt(BOARD_SIZE);
             int y = random.nextInt(BOARD_SIZE);
             int val = random.nextInt(BOARD_SIZE) + 1;
-            if(SudokuValidation.isValid(board, x, y, val)){
+            if(solver.isValid(board, x, y, val)){
                 board[x][y] = val;
             }
         }
