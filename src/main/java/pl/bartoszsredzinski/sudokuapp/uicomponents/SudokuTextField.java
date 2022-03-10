@@ -39,6 +39,21 @@ public class SudokuTextField extends TextField{
         setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
     }
 
+    public void resetToEditable(){
+        setStyle(null);
+        setEditable(true);
+        setMouseTransparent(false);
+        setFocusTraversable(true);
+        setStyle("-fx-display-caret: false;");
+    }
+
+    public void setNotEditable(){
+        setEditable(false);
+        setMouseTransparent(true);
+        setFocusTraversable(false);
+        setStyle("-fx-border-color: #9c9c9c; -fx-border-width: 2; -fx-border-radius: 4");
+    }
+
     public int getX(){
         return x;
     }
