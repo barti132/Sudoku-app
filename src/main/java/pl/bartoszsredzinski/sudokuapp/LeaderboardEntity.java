@@ -9,7 +9,7 @@ import java.io.Serializable;
  * created on 11.03.2022
  */
 public class LeaderboardEntity implements Comparable<LeaderboardEntity>, Serializable{
-    private final Integer id;
+    private Integer id;
     private final String name;
     private final Integer score;
 
@@ -31,7 +31,9 @@ public class LeaderboardEntity implements Comparable<LeaderboardEntity>, Seriali
         return score;
     }
 
-
+    public void setId(Integer id){
+        this.id = id;
+    }
 
     @Override
     public int compareTo(LeaderboardEntity e){

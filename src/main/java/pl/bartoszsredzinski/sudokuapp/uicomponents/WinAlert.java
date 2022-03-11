@@ -1,6 +1,7 @@
 package pl.bartoszsredzinski.sudokuapp.uicomponents;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -22,7 +23,12 @@ import org.kordamp.bootstrapfx.BootstrapFX;
 import pl.bartoszsredzinski.sudokuapp.LeaderboardEntity;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -33,7 +39,12 @@ import java.text.DecimalFormat;
  */
 public class WinAlert extends Stage{
 
+    private List<LeaderboardEntity> leaderboard;
+    private TableView<LeaderboardEntity> table;
+
     public WinAlert(long milliseconds, int mistakes, int level){
+        leaderboard = null;
+
         initModality(Modality.WINDOW_MODAL);
         setTitle("Win!");
         VBox box = new VBox();
@@ -48,8 +59,8 @@ public class WinAlert extends Stage{
 
         box.getChildren().addAll(title, content);
 
-
-        box.getChildren().addAll(new Label("Leaderboard: "), createListView());
+        table = createListView();
+        box.getChildren().addAll(new Label("Leaderboard: "), table);
 
 
         TextField nameField = new TextField();
@@ -62,7 +73,7 @@ public class WinAlert extends Stage{
 
         Button save = new Button("Save result");
         save.getStyleClass().addAll("btn", "btn-primary");
-        save.setOnAction(e -> saveResult(nameField.getText()));
+        save.setOnAction(e -> saveResult(nameField.getText(), score));
 
         buttons.setSpacing(10);
         buttons.setAlignment(Pos.CENTER_RIGHT);
@@ -82,9 +93,22 @@ public class WinAlert extends Stage{
         setScene(scene);
     }
 
-    private void saveResult(String text){
+    private void saveResult(String text, long score){
         if(!text.equals("")){
+            int id = 1;
+            if(leaderboard != null){
+                id = leaderboard.size() + 1;
+            }
+            LeaderboardEntity entity = new LeaderboardEntity(id, text, (int) score);
+            leaderboard.add(entity);
+            Collections.sort(leaderboard, Collections.reverseOrder());
 
+            for(int i = 0; i < leaderboard.size(); i++){
+                leaderboard.get(i).setId(i + 1);
+            }
+
+            table.setItems(FXCollections.observableList(leaderboard));
+            //save to file
         }
     }
 
@@ -112,14 +136,13 @@ public class WinAlert extends Stage{
     }
 
     private ObservableList<LeaderboardEntity> loadLeaderBoard(){
-        LeaderboardEntity[] leaderboard = null;
         File file = new File("leaderboard.txt");
         if(!file.exists()){
             try{
                 file.createNewFile();
             }catch(IOException e){
                 e.printStackTrace();
-                return FXCollections.observableArrayList(leaderboard);
+                return null;
             }
         }
         else{
@@ -132,8 +155,11 @@ public class WinAlert extends Stage{
                 while((line = reader.readLine()) != null){
                     builder.append(line);
                 }
+
+                Type collectionType = new TypeToken<ArrayList<LeaderboardEntity>>(){
+                }.getType();
                 Gson gson = new Gson();
-                leaderboard = gson.fromJson(builder.toString(), LeaderboardEntity[].class);
+                leaderboard = gson.fromJson(builder.toString(), collectionType);
 
                 reader.close();
 
