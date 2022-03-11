@@ -34,11 +34,18 @@ public class SudokuGame{
     private boolean checkValid;
     private boolean loadingSudoku;
 
+    private int mistakes;
+    private long start;
+    private long finish;
+
     public SudokuGame(){
         sudoku = new Sudoku();
         lastSelectedTextField = new Coordinates(0, 0);
         checkValid = true;
         loadingSudoku = false;
+        mistakes = 0;
+        start = 0;
+        finish = 0;
     }
 
     public Parent createContent(){
@@ -118,29 +125,32 @@ public class SudokuGame{
         return sudokuPane;
     }
 
-    private void listenerTextFieldChangeTextAction(SudokuTextField field, String t1){
+    private void listenerTextFieldChangeTextAction(SudokuTextField field, String newText){
         field.setDefaultStyle();
-        if(checkValid && !t1.equals("")){ // with checking
-            if(sudoku.isCorrect(Integer.parseInt(t1), field.getX(), field.getY())){
-                sudoku.setField(Integer.parseInt(t1), field.getX(), field.getY());
-                messageBox.writeMessage("", "black");
+        if(!newText.equals("")){
+            int value = Integer.parseInt(newText);
+            sudoku.setField(value, field.getX(), field.getY());
+
+            if(checkValid){// with checking
+                if(sudoku.isCorrect(value, field.getX(), field.getY())){ //correct
+                    messageBox.writeMessage("", "black");
+                }
+                else{//incorrect
+                    mistakes++;
+                    messageBox.writeMessage("Wrong value!", "red");
+                    field.setStyle("-fx-text-fill: red");
+                }
             }
-            else{
-                sudoku.setField(Integer.parseInt(t1), field.getX(), field.getY());
-                messageBox.writeMessage("Wrong value!", "red");
-                field.setStyle("-fx-text-fill: red");
+
+            if(!loadingSudoku && sudoku.isWin()){//check win
+                finish = System.currentTimeMillis();
+                WinAlert alert = new WinAlert(finish - start, mistakes, levelComboBox.getLevelAsInteger());
+                alert.showAndWait();
+                mistakes = 0;
             }
-        }
-        else if(!t1.equals("")){ //without checking
-            sudoku.setField(Integer.parseInt(t1), field.getX(), field.getY());
         }
         else{ //delete value
             sudoku.setField(0, field.getX(), field.getY());
-        }
-
-        if(!loadingSudoku && sudoku.isWin()){
-            WinAlert alert = new WinAlert();
-            alert.showAndWait();
         }
     }
 
@@ -152,6 +162,9 @@ public class SudokuGame{
                 messageBox.writeMessage("Give value.", "green");
             }
         }
+
+        WinAlert alert = new WinAlert(finish - start, mistakes, levelComboBox.getLevelAsInteger());
+        alert.showAndWait();
     }
 
     private void onClickSolveButton(){
@@ -170,17 +183,14 @@ public class SudokuGame{
     private void onClickStartSudokuButton(){
         sudoku.generate(levelComboBox.getLevelAsInteger());
         loadSudokuToBoard(true);
+        start = System.currentTimeMillis();
         messageBox.writeMessage("Generated new Sudoku!", "green");
     }
 
     private void validBoard(){
         for(Node node : sudokuGrid.getChildren()){
             SudokuTextField field = (SudokuTextField) ((StackPane) node).getChildren().get(0);
-            if(field.getText().equals("")){
-                continue;
-            }
-
-            if(!sudoku.isCorrect(Integer.parseInt(field.getText()), field.getX(), field.getY())){
+            if(!field.getText().equals("") && !sudoku.isCorrect(Integer.parseInt(field.getText()), field.getX(), field.getY())){
                 field.setStyle("-fx-text-fill: red");
                 messageBox.writeMessage("Sudoku not valid!", "red");
             }
@@ -201,10 +211,9 @@ public class SudokuGame{
 
             if(setNotEditable){
                 field.resetToEditable();
-            }
-
-            if(setNotEditable && !val.equals("")){
-                field.setNotEditable();
+                if(!val.equals("")){
+                    field.setNotEditable();
+                }
             }
         }
         loadingSudoku = false;

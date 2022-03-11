@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * Class description
+ * Combo box implementation for sudoku game
  *
  * @author Bartosz Średziński
  * created on 10.03.2022

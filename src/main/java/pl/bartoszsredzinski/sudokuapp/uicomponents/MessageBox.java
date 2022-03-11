@@ -3,7 +3,7 @@ package pl.bartoszsredzinski.sudokuapp.uicomponents;
 import javafx.scene.control.TextArea;
 
 /**
- * Class description
+ * Message text area
  *
  * @author Bartosz Średziński
  * created on 10.03.2022
