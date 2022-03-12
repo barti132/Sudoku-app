@@ -40,7 +40,6 @@ import java.util.List;
 public class WinAlert extends Stage{
 
     private List<LeaderboardEntity> leaderboard;
-    private final TableView<LeaderboardEntity> table;
 
     public WinAlert(long milliseconds, int mistakes, int level){
         leaderboard = null;
@@ -59,7 +58,7 @@ public class WinAlert extends Stage{
 
         box.getChildren().addAll(title, content);
 
-        table = createListView();
+        TableView<LeaderboardEntity> table = createListView();
         table.setItems(loadLeaderboard(score));
         box.getChildren().addAll(new Label("Leaderboard: "), table);
 

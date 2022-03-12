@@ -165,16 +165,9 @@ public class SudokuGame{
     }
 
     private void onClickSolveButton(){
-        int[][] board = sudoku.solve();
-
-        if(board == null){
-            messageBox.writeMessage("No solution for your input!!!", "red");
-        }
-        else{
-            sudoku.setBoard(board);
-            loadSudokuToBoard(false);
-            messageBox.writeMessage("Solved.", "green");
-        }
+        sudoku.setBoard(sudoku.getSolvedBoard());
+        loadSudokuToBoard(false);
+        messageBox.writeMessage("Solved.", "green");
     }
 
     private void onClickStartSudokuButton(){
