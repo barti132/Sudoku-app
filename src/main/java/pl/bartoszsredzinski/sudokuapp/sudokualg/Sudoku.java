@@ -24,6 +24,9 @@ public class Sudoku{
     }
 
     public void generate(int level){
+        if(level > 6){//81 fields, to solve sudoku minimal count of values is 16
+            level = 6;
+        }
         board = new int[BOARD_SIZE][BOARD_SIZE];
         int[][] tmp;
         do{
@@ -66,13 +69,15 @@ public class Sudoku{
             int x = random.nextInt(BOARD_SIZE);
             int y = random.nextInt(BOARD_SIZE);
             int val = board[x][y];
-            board[x][y] = 0;
+            if(val != 0){
+                board[x][y] = 0;
 
-            if(solve() == null){
-                this.board[x][y] = val;
-            }
-            else{
-                i++;
+                if(solve() == null){
+                    board[x][y] = val;
+                }
+                else{
+                    i++;
+                }
             }
         }
     }
@@ -103,5 +108,9 @@ public class Sudoku{
             }
         }
         return true;
+    }
+
+    public int[][] getSolvedBoard(){
+        return solvedBoard;
     }
 }

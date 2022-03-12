@@ -44,14 +44,14 @@ public class SudokuTextField extends TextField{
         setEditable(true);
         setMouseTransparent(false);
         setFocusTraversable(true);
-        setStyle("-fx-display-caret: false;");
+        setDefaultStyle();
     }
 
     public void setNotEditable(){
         setEditable(false);
         setMouseTransparent(true);
         setFocusTraversable(false);
-        setStyle("-fx-border-color: #9c9c9c; -fx-border-width: 2; -fx-border-radius: 4");
+        setStyle("-fx-border-color: #9c9c9c; -fx-border-width: 2; -fx-border-radius: 4;");
     }
 
     public int getX(){

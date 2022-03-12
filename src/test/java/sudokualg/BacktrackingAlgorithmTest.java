@@ -8,8 +8,6 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Class description
- *
  * @author Bartosz Średziński
  * created on 21.02.2022
  */

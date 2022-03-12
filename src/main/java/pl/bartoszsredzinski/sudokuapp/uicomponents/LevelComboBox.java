@@ -1,8 +1,6 @@
 package pl.bartoszsredzinski.sudokuapp.uicomponents;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -15,7 +13,7 @@ import javafx.scene.layout.VBox;
  */
 public class LevelComboBox extends VBox{
 
-    private ComboBox<String> levelCombo;
+    private final ComboBox<String> levelCombo;
 
     public LevelComboBox(){
         levelCombo = new ComboBox<>(FXCollections.observableArrayList("Easy", "Medium", "Hard"));
@@ -26,9 +24,9 @@ public class LevelComboBox extends VBox{
 
     public int getLevelAsInteger(){
         return switch(levelCombo.getSelectionModel().getSelectedItem()){
-            case "Easy" -> 4;
-            case "Hard" -> 8;
-            default -> 1;//6
+            case "Easy" -> 3;
+            case "Hard" -> 5;
+            default -> 4;
         };
     }
 }
