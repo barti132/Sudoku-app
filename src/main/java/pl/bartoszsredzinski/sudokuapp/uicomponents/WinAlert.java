@@ -1,18 +1,19 @@
 package pl.bartoszsredzinski.sudokuapp.uicomponents;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -26,7 +27,6 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +40,7 @@ import java.util.List;
 public class WinAlert extends Stage{
 
     private List<LeaderboardEntity> leaderboard;
-    private TableView<LeaderboardEntity> table;
+    private final TableView<LeaderboardEntity> table;
 
     public WinAlert(long milliseconds, int mistakes, int level){
         leaderboard = null;
@@ -60,61 +60,33 @@ public class WinAlert extends Stage{
         box.getChildren().addAll(title, content);
 
         table = createListView();
+        table.setItems(loadLeaderboard(score));
         box.getChildren().addAll(new Label("Leaderboard: "), table);
 
-
-        TextField nameField = new TextField();
-
-        HBox buttons = new HBox();
 
         Button close = new Button("Close");
         close.getStyleClass().addAll("btn", "btn-primary");
         close.setOnAction(e -> close());
+        close.setAlignment(Pos.CENTER);
 
-        Button save = new Button("Save result");
-        save.getStyleClass().addAll("btn", "btn-primary");
-        save.setOnAction(e -> saveResult(nameField.getText(), score));
-
-        buttons.setSpacing(10);
-        buttons.setAlignment(Pos.CENTER_RIGHT);
-        buttons.getChildren().addAll(save, close);
-        box.getChildren().addAll(new Label("Your name: "), nameField, buttons);
+        box.getChildren().addAll(close);
 
         box.setPrefSize(600, 400);
         box.setSpacing(10);
         box.setPadding(new Insets(10));
+        box.setAlignment(Pos.CENTER);
 
         setResizable(false);
 
 
         getIcons().add(new Image("logo.png"));
         Scene scene = new Scene(box);
-        save.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         setScene(scene);
-    }
-
-    private void saveResult(String text, long score){
-        if(!text.equals("")){
-            int id = 1;
-            if(leaderboard != null){
-                id = leaderboard.size() + 1;
-            }
-            LeaderboardEntity entity = new LeaderboardEntity(id, text, (int) score);
-            leaderboard.add(entity);
-            Collections.sort(leaderboard, Collections.reverseOrder());
-
-            for(int i = 0; i < leaderboard.size(); i++){
-                leaderboard.get(i).setId(i + 1);
-            }
-
-            table.setItems(FXCollections.observableList(leaderboard));
-            //save to file
-        }
     }
 
     private TableView<LeaderboardEntity> createListView(){
         TableView<LeaderboardEntity> table = new TableView<>();
-
 
         TableColumn<LeaderboardEntity, Integer> idCol = new TableColumn<>("Id");
         idCol.setPrefWidth(50);
@@ -126,8 +98,6 @@ public class WinAlert extends Stage{
         scoreCol.setPrefWidth(200);
         scoreCol.setCellValueFactory(new PropertyValueFactory<>("score"));
 
-
-        table.setItems(loadLeaderBoard());
         table.getColumns().addAll(idCol, nameCol, scoreCol);
 
         table.setEditable(false);
@@ -135,50 +105,93 @@ public class WinAlert extends Stage{
         return table;
     }
 
-    private ObservableList<LeaderboardEntity> loadLeaderBoard(){
+    private ObservableList<LeaderboardEntity> loadLeaderboard(long score){
         File file = new File("leaderboard.txt");
+
         if(!file.exists()){
-            try{
-                file.createNewFile();
-            }catch(IOException e){
-                e.printStackTrace();
-                return null;
-            }
+            createFile(file);
+            leaderboard = new ArrayList<>();
         }
         else{
+            readLeaderboardFile(file);
+        }
 
-            BufferedReader reader = null;
-            try{
-                reader = new BufferedReader(new FileReader(file));
-                String line;
-                StringBuilder builder = new StringBuilder();
-                while((line = reader.readLine()) != null){
-                    builder.append(line);
-                }
+        saveNewScore(score);
 
-                Type collectionType = new TypeToken<ArrayList<LeaderboardEntity>>(){
-                }.getType();
-                Gson gson = new Gson();
-                leaderboard = gson.fromJson(builder.toString(), collectionType);
+        return FXCollections.observableArrayList(leaderboard);
+    }
 
-                reader.close();
+    private void saveNewScore(long score){
 
+        int id = leaderboard.size() + 1;
 
-            }catch(IOException e){
-                e.printStackTrace();
-            }finally{
-                if(reader != null){
-                    try{
-                        reader.close();
-                    }catch(IOException e){
-                        e.printStackTrace();
-                    }
+        LeaderboardEntity entity = new LeaderboardEntity(id, System.getProperty("user.name"), (int) score);
+        leaderboard.add(entity);
+        leaderboard.sort(Collections.reverseOrder());
+
+        //set sorted id
+        for(int i = 0; i < leaderboard.size(); i++){
+            leaderboard.get(i).setId(i + 1);
+        }
+
+        writeToLeaderboardFile();
+    }
+
+    private void writeToLeaderboardFile(){
+        BufferedWriter writer = null;
+        try{
+            Gson gson = new Gson();
+            writer = new BufferedWriter(new FileWriter("leaderboard.txt"));
+            writer.write(gson.toJson(leaderboard));
+        }catch(IOException e){
+            e.printStackTrace();
+        }finally{
+            if(writer != null){
+                try{
+                    writer.close();
+                }catch(IOException e){
+                    e.printStackTrace();
                 }
             }
         }
+    }
+
+    private void readLeaderboardFile(File file){
+        BufferedReader reader = null;
+        try{
+            reader = new BufferedReader(new FileReader(file));
+            String line;
+            StringBuilder builder = new StringBuilder();
+            while((line = reader.readLine()) != null){
+                builder.append(line);
+            }
+
+            Type collectionType = new TypeToken<ArrayList<LeaderboardEntity>>(){
+            }.getType();
+            Gson gson = new Gson();
+            leaderboard = gson.fromJson(builder.toString(), collectionType);
 
 
-        return FXCollections.observableArrayList(leaderboard);
+        }catch(IOException | JsonSyntaxException e){
+            e.printStackTrace();
+            leaderboard = new ArrayList<>();
+        }finally{
+            if(reader != null){
+                try{
+                    reader.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void createFile(File file){
+        try{
+            file.createNewFile();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
 }

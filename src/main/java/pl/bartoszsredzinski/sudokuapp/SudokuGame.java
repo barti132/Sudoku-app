@@ -162,9 +162,6 @@ public class SudokuGame{
                 messageBox.writeMessage("Give value.", "green");
             }
         }
-
-        WinAlert alert = new WinAlert(finish - start, mistakes, levelComboBox.getLevelAsInteger());
-        alert.showAndWait();
     }
 
     private void onClickSolveButton(){
